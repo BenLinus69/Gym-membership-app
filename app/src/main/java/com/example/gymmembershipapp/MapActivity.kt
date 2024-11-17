@@ -1,35 +1,39 @@
 package com.example.gymmembershipapp
 
-import android.content.Intent
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gymmembershipapp.ui.theme.GymMembershipAppTheme
 
-class MainActivity : ComponentActivity() {
+
+
+class MapActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             GymMembershipAppTheme {
-                HomeScreen(
-                    onNavigateToMap = {
-                        startActivity(Intent(this, MapActivity::class.java))
-                    }
-                )
+                MapScreen()
             }
         }
     }
 }
 
 @Composable
-fun HomeScreen(onNavigateToMap: () -> Unit) {
+fun MapScreen() {
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
@@ -37,45 +41,34 @@ fun HomeScreen(onNavigateToMap: () -> Unit) {
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
         ) {
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
                 Text(
-                    text = "Gym Membership App",
+                    text = "Gym Map",
                     style = MaterialTheme.typography.headlineMedium
                 )
             }
 
-            // main
-            Column(
+            // to add map
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "Welcome to my gym app",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = onNavigateToMap) {
-                    Text("See gyms on the map")
-                }
+                // map
             }
         }
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview() {
+fun MapScreenPreview() {
     GymMembershipAppTheme {
-        HomeScreen(onNavigateToMap = {})
+        MapScreen()
     }
 }
