@@ -15,10 +15,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import com.google.android.gms.maps.*
 import com.example.gymmembershipapp.ui.theme.GymMembershipAppTheme
-
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 
 
 class MapActivity : ComponentActivity() {
@@ -49,7 +53,7 @@ fun MapScreen() {
                     .padding(16.dp)
             ) {
                 Text(
-                    text = "Gym Map",
+                    text = "Available Gyms",
                     style = MaterialTheme.typography.headlineMedium
                 )
             }
@@ -59,12 +63,42 @@ fun MapScreen() {
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                // map
+                GoogleMapView()
             }
         }
     }
 }
+@Composable
+fun GoogleMapView() {
+    val context = LocalContext.current
+    val mapView = MapView(context)
 
+    // initialize mapView
+    AndroidView(
+        factory = { mapView },
+        modifier = Modifier.fillMaxSize(),
+        update = { map ->
+            map.onCreate(null)
+            map.getMapAsync { googleMap ->
+                setupGoogleMap(googleMap)
+            }
+            map.onResume()
+        }
+    )
+}
+fun setupGoogleMap(googleMap: GoogleMap) {
+    // coordinates for Bucharest
+    val bucharest = LatLng(44.4268, 26.1025)
+
+    // Bucharest centre
+    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bucharest, 12f))
+
+    googleMap.addMarker(
+        MarkerOptions()
+            .position(bucharest)
+            .title("Bucharest")
+    )
+}
 @Preview(showBackground = true)
 @Composable
 fun MapScreenPreview() {
