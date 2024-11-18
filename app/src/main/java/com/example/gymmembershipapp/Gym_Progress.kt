@@ -1,27 +1,23 @@
 package com.example.gymmembershipapp
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
-
-import kotlinx.coroutines.launch
 
 class GymProgressFragment : Fragment() {
     override fun onCreateView(
@@ -36,58 +32,34 @@ class GymProgressFragment : Fragment() {
     }
 }
 
-@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun GymProgressScreen() {
-    //calc screen width
-    val screenWidth = LocalDensity.current.run { LocalConfiguration.current.screenWidthDp.dp.toPx() }
-
-    val scope = rememberCoroutineScope()
-    val animation = remember { Animatable(0f) }
-
-    //animation
-    scope.launch {
-        animation.animateTo(
-            targetValue = screenWidth,
-            animationSpec = infiniteRepeatable(
-                animation = tween(2000, easing = LinearEasing),
-                repeatMode = RepeatMode.Reverse
-            )
-        )
-    }
-
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = "Gym Progress",
-                style = MaterialTheme.typography.headlineMedium
-            )
-            Spacer(modifier = Modifier.height(16.dp))
+            SpinningGearAnimation(modifier = Modifier.fillMaxSize())
 
-            ProgressStat(label = "Workouts Completed", value = "12")
-            ProgressStat(label = "Entries in the last month:", value = "4")
-            ProgressStat(label = "Current Weight", value = "80")
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Box(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp),
-                contentAlignment = Alignment.CenterStart
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Canvas(modifier = Modifier.padding(start = animation.value.dp)) {
-                    drawCircle(color = Color.Blue, radius = 30f)
-                }
+                Text(
+                    text = "Gym Progress",
+                    style = MaterialTheme.typography.headlineMedium
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                ProgressStat(label = "Workouts Completed", value = "12")
+                ProgressStat(label = "Entries in the last month:", value = "4")
+                ProgressStat(label = "Current Weight", value = "80")
             }
         }
     }
@@ -107,3 +79,39 @@ fun ProgressStat(label: String, value: String) {
         )
     }
 }
+
+@Composable
+fun SpinningGearAnimation(modifier: Modifier = Modifier) {
+    val rotation = remember { Animatable(0f) }
+
+    // animation
+    LaunchedEffect(Unit) {
+        rotation.animateTo(
+            targetValue = 360f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 3000, easing = LinearEasing),
+                repeatMode = RepeatMode.Restart
+            )
+        )
+    }
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomCenter // place at the bottom of the screen
+    ) {
+        Canvas(modifier = Modifier.size(100.dp)) {
+            val canvasSize = size
+            val gearSize = canvasSize.minDimension
+
+            rotate(rotation.value) {
+                // drawing the shape
+                drawRoundRect(
+                    color = Color.Blue,
+                    topLeft = center.copy(x = center.x - gearSize / 4, y = center.y - gearSize / 4),
+                    size = Size(gearSize / 2, gearSize / 2),
+                    cornerRadius = CornerRadius(gearSize / 8, gearSize / 8)
+                )
+            }
+        }
+    }
+}
+
