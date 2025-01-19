@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -75,24 +77,21 @@ fun GymProgressScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .weight(1f)
                     .padding(horizontal = 16.dp)
             ) {
-                workouts.take(3).forEach { workout ->
+                items(workouts) { workout ->
                     WorkoutCard(workout = workout)
-                }
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                Button(onClick = navigateToWorkoutEntry) {
-                    Text("Add Workout")
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+
+            Button(onClick = navigateToWorkoutEntry, modifier = Modifier.padding(16.dp)) {
+                Text("Add Workout")
+            }
 
             // Home button
             Button(
@@ -106,6 +105,7 @@ fun GymProgressScreen(
         }
     }
 }
+
 
 @Composable
 fun WorkoutCard(workout: Workout) {
