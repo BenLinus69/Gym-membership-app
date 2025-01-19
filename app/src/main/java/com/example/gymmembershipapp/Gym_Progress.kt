@@ -5,11 +5,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -65,7 +66,7 @@ fun GymProgressScreen(
 
             Text(
                 text = "Gym Progress",
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.headlineMedium.copy(color = Color(0xFFFB8C00)),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp),
@@ -74,17 +75,14 @@ fun GymProgressScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Display workouts
+
             Column(
                 modifier = Modifier
                     .weight(1f)
                     .padding(horizontal = 16.dp)
             ) {
                 workouts.take(3).forEach { workout ->
-                    ProgressStat(
-                        label = "Exercise: ${workout.exercise}",
-                        value = "Reps: ${workout.repetitions}, Sets: ${workout.sets}, Weight: ${workout.weight}kg"
-                    )
+                    WorkoutCard(workout = workout)
                 }
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -96,29 +94,60 @@ fun GymProgressScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Home button
             Button(
                 onClick = navigateToHome,
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth()
             ) {
-                Text("Home")
+                Text("Home", color = Color.White)
             }
         }
     }
 }
 
 @Composable
-fun ProgressStat(label: String, value: String) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(vertical = 8.dp)
+fun WorkoutCard(workout: Workout) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .background(Color(0xFFE1F5FE)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        shape = MaterialTheme.shapes.medium
     ) {
-        Text(text = label, style = MaterialTheme.typography.bodyLarge)
-        Text(
-            text = value,
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.primary
-        )
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = "Exercise: ${workout.exercise}",
+                style = MaterialTheme.typography.bodyLarge.copy(color = Color(0xFF000000)),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Reps: ${workout.repetitions}",
+                style = MaterialTheme.typography.bodyMedium.copy(color = Color(0xFF388E3C)),
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Sets: ${workout.sets}",
+                style = MaterialTheme.typography.bodyMedium.copy(color = Color(0xFF388E3C)),
+            )
+
+            // Display weight on the next line
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Weight: ${workout.weight}kg",
+                style = MaterialTheme.typography.bodyMedium.copy(color = Color(0xFF388E3C)),
+            )
+        }
     }
 }
+
