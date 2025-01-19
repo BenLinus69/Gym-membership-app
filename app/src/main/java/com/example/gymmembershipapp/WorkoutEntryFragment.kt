@@ -6,11 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -41,17 +43,14 @@ class WorkoutEntryFragment : Fragment() {
         val database = AppDatabase.getDatabase(requireContext())
         lifecycleScope.launch {
             try {
-
-
                 database.workoutDao().insert(workout)
-                Log.d("WorkoutEntryFragment", "Workout salvat")
+                Log.d("WorkoutEntryFragment", "Workout saved")
                 onComplete()
             } catch (e: Exception) {
-                Log.e("WorkoutEntryFragment", "Eroare: ${e.message}", e)
+                Log.e("WorkoutEntryFragment", "Error: ${e.message}", e)
             }
         }
     }
-
 
     private fun navigateToGymProgress() {
         requireActivity().supportFragmentManager.beginTransaction()
@@ -79,43 +78,72 @@ fun WorkoutEntryScreen(onSaveWorkout: (Workout) -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            TextField(
+            Text(
+                text = "Enter Workout Details",
+                style = MaterialTheme.typography.headlineMedium.copy(color = Color(0xFFFB8C00)),
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            OutlinedTextField(
                 value = exercise,
                 onValueChange = { exercise = it },
-                label = { Text("Exercise") }
+                label = { Text("Exercise") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp),
+                singleLine = true
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            TextField(
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
                 value = repetitions,
                 onValueChange = { repetitions = it },
                 label = { Text("Repetitions") },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp),
+                singleLine = true
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            TextField(
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
                 value = weight,
                 onValueChange = { weight = it },
                 label = { Text("Weight (kg)") },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp),
+                singleLine = true
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            TextField(
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
                 value = sets,
                 onValueChange = { sets = it },
                 label = { Text("Sets") },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp),
+                singleLine = true
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = {
-                val workout = Workout(
-                    exercise = exercise,
-                    repetitions = repetitions.toIntOrNull() ?: 0,
-                    weight = weight.toIntOrNull() ?: 0,
-                    sets = sets.toIntOrNull() ?: 0
-                )
-                onSaveWorkout(workout)
-            }) {
-                Text("Save Workout")
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = {
+                    val workout = Workout(
+                        exercise = exercise,
+                        repetitions = repetitions.toIntOrNull() ?: 0,
+                        weight = weight.toIntOrNull() ?: 0,
+                        sets = sets.toIntOrNull() ?: 0
+                    )
+                    onSaveWorkout(workout)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFB8C00))
+            ) {
+                Text("Save Workout", color = Color.White)
             }
         }
     }
