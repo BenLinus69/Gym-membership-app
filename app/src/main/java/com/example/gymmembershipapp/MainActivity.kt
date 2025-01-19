@@ -3,6 +3,7 @@ package com.example.gymmembershipapp
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -10,13 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.example.gymmembershipapp.ui.theme.GymMembershipAppTheme
+import androidx.compose.ui.layout.ContentScale
 
 class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,10 +67,8 @@ fun HomeScreen(onNavigateToMap: () -> Unit, onNavigateToProgress: () -> Unit) {
             ) {
                 Text(
                     text = "Gym Membership App",
-                    style = TextStyle(
-                        color = Color.White,
-                        fontSize = MaterialTheme.typography.headlineMedium.fontSize,
-                        fontWeight = MaterialTheme.typography.headlineMedium.fontWeight
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        color = Color.White
                     )
                 )
             }
@@ -85,43 +85,60 @@ fun HomeScreen(onNavigateToMap: () -> Unit, onNavigateToProgress: () -> Unit) {
                     text = "Welcome to your gym journey!",
                     style = MaterialTheme.typography.bodyLarge.copy(
                         color = Color.White,
-                        fontSize = 20.dp.value.sp
+                        fontSize = 20.sp
                     )
                 )
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Button to see gyms on the map
+                // button for map
                 Button(
                     onClick = onNavigateToMap,
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF76C7C0))
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp)
+                        .padding(0.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 12.dp)
                 ) {
-                    Text(
-                        text = "See Gyms on the Map",
-                        color = Color.White,
-                        style = MaterialTheme.typography.bodyLarge
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.map),
+                            contentDescription = "See Gyms on the Map",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-                // Button to view gym progress
                 Button(
                     onClick = onNavigateToProgress,
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFB8C00))
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp)
+                        .padding(0.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 12.dp)
                 ) {
-                    Text(
-                        text = "View Gym Progress",
-                        color = Color.White,
-                        style = MaterialTheme.typography.bodyLarge
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        // Image as button background
+                        Image(
+                            painter = painterResource(id = R.drawable.progress),
+                            contentDescription = "View Gym Progress",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                 }
             }
         }
     }
 }
-
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
