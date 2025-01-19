@@ -1,6 +1,8 @@
 [versions]
 accompanistPermissions = "0.33.0-alpha"
 agp = "8.7.2"
+artifactid = "version"
+fragmentKtxVersion = "1.5.5"
 kotlin = "2.0.0"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -12,12 +14,18 @@ composeBom = "2024.11.00"
 navigationCompose = "2.8.4"
 playServicesLocation = "21.3.0"
 playServicesMaps = "19.0.0"
+roomCompiler = "2.5.0"
+roomKtx = "2.6.1"
 storage = "1.5.0"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtxVersion" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
+artifactid = { module = "groupId:artifactId", version.ref = "artifactid" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
