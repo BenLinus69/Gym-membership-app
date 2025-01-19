@@ -1,9 +1,11 @@
 package com.example.gymmembershipapp
 
-
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,25 +21,58 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.google.android.gms.maps.*
+import androidx.core.app.ActivityCompat
 import com.example.gymmembershipapp.ui.theme.GymMembershipAppTheme
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 
 class MapActivity : ComponentActivity() {
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    // Request location permissions
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            setContent {
+                GymMembershipAppTheme {
+                    MapScreen(fusedLocationClient)
+                }
+            }
+        } else {
+            finish()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            GymMembershipAppTheme {
-                MapScreen()
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        // check location permission
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            //request permission
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        } else {
+            //load map
+            setContent {
+                GymMembershipAppTheme {
+                    MapScreen(fusedLocationClient)
+                }
             }
         }
     }
 }
 
 @Composable
-fun MapScreen() {
+fun MapScreen(fusedLocationClient: FusedLocationProviderClient) {
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
@@ -58,51 +93,59 @@ fun MapScreen() {
                 )
             }
 
-            // to add map
+            // Add map
             Box(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                GoogleMapView()
+                GoogleMapView(fusedLocationClient)
             }
         }
     }
 }
+
 @Composable
-fun GoogleMapView() {
+fun GoogleMapView(fusedLocationClient: FusedLocationProviderClient) {
     val context = LocalContext.current
     val mapView = MapView(context)
 
-    // initialize mapView
+    // Initialize mapView
     AndroidView(
         factory = { mapView },
         modifier = Modifier.fillMaxSize(),
         update = { map ->
             map.onCreate(null)
             map.getMapAsync { googleMap ->
-                setupGoogleMap(googleMap)
+                if (ActivityCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    googleMap.isMyLocationEnabled = true
+
+                    // get current location
+                    fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                        if (location != null) {
+                            val currentLatLng = LatLng(location.latitude, location.longitude)
+                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
+                            googleMap.addMarker(
+                                MarkerOptions()
+                                    .position(currentLatLng)
+                                    .title("You are here")
+                            )
+                        }
+                    }
+                }
             }
             map.onResume()
         }
     )
 }
-fun setupGoogleMap(googleMap: GoogleMap) {
-    // coordinates for Bucharest
-    val bucharest = LatLng(44.4268, 26.1025)
 
-    // Bucharest centre
-    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bucharest, 12f))
-
-    googleMap.addMarker(
-        MarkerOptions()
-            .position(bucharest)
-            .title("Bucharest")
-    )
-}
 @Preview(showBackground = true)
 @Composable
 fun MapScreenPreview() {
     GymMembershipAppTheme {
-        MapScreen()
+        MapScreen(LocationServices.getFusedLocationProviderClient(LocalContext.current))
     }
 }
