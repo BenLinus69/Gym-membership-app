@@ -19,10 +19,21 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.example.gymmembershipapp.ui.theme.GymMembershipAppTheme
 import androidx.compose.ui.layout.ContentScale
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : FragmentActivity() {
+    private val auth = FirebaseAuth.getInstance()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        //check if user is authenticated
+        if (auth.currentUser == null) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
+
         setContent {
             GymMembershipAppTheme {
                 HomeScreen(
@@ -31,10 +42,18 @@ class MainActivity : FragmentActivity() {
                     },
                     onNavigateToProgress = {
                         navigateToFragment(GymProgressFragment())
+                    },
+                    onLogout = {
+                        auth.signOut()
+                        redirectToLogin()
                     }
                 )
             }
         }
+    }
+    private fun redirectToLogin() {
+        startActivity(Intent(this, LoginActivity::class.java))
+        finish()
     }
 
     // Get the fragment
@@ -44,13 +63,27 @@ class MainActivity : FragmentActivity() {
             .addToBackStack(null) // can go back to home screen
             .commit()
     }
+
 }
 
+
+
+
 @Composable
-fun HomeScreen(onNavigateToMap: () -> Unit, onNavigateToProgress: () -> Unit) {
+fun HomeScreen(onNavigateToMap: () -> Unit, onNavigateToProgress: () -> Unit, onLogout: () -> Unit) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = Color(0xFF1F3A61),
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = onLogout,
+                modifier = Modifier.padding(16.dp),
+                containerColor = Color.Red,
+                contentColor = Color.White
+            ) {
+                Text("Logout")
+            }
+        }
     ) { innerPadding ->
 
         Column(
@@ -143,6 +176,6 @@ fun HomeScreen(onNavigateToMap: () -> Unit, onNavigateToProgress: () -> Unit) {
 @Composable
 fun HomeScreenPreview() {
     GymMembershipAppTheme {
-        HomeScreen(onNavigateToMap = {}, onNavigateToProgress = {})
+        HomeScreen(onNavigateToMap = {}, onNavigateToProgress = {}, onLogout = {})
     }
 }

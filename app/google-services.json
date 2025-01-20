@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "821080408250",
+    "project_id": "gym-membership-app-4026e",
+    "storage_bucket": "gym-membership-app-4026e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:821080408250:android:8e5826746b996f87c50283",
+        "android_client_info": {
+          "package_name": "com.example.gymmembershipapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASPyALxdgj5vTAYaqc5A4TXgFWixnWzWs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
