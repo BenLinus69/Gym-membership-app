@@ -22,7 +22,7 @@ abstract class AppDatabase : RoomDatabase() {
                     "workout_database"
                 ).build()
 
-                Log.d("AppDatabase", "Instanța a fost creata")
+                Log.d("AppDatabase", "Instanta a fost creata")
                 INSTANCE = instance
                 instance
             }

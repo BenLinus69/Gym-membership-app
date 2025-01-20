@@ -1,5 +1,6 @@
 package com.example.gymmembershipapp
 
+import NotificationHelper
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -23,16 +24,23 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 
+
 class GymProgressFragment : Fragment() {
     private val gymProgressViewModel: GymProgressViewModel by viewModels()
-
+    private lateinit var notificationHelper: NotificationHelper
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        notificationHelper = NotificationHelper(requireContext())
         gymProgressViewModel.initializeDatabase(requireContext())  // init db
+        //gymProgressViewModel.debugClearWorkouts()
         return ComposeView(requireContext()).apply {
             setContent {
+                val workouts by gymProgressViewModel.workouts.collectAsState()
+
+                checkMilestones(workouts.size)
+
                 GymProgressScreen(
                     navigateToWorkoutEntry = {
                         navigateToFragment(WorkoutEntryFragment())
@@ -41,9 +49,16 @@ class GymProgressFragment : Fragment() {
                         val intent = Intent(requireContext(), MainActivity::class.java)
                         startActivity(intent)
                     },
-                    workouts = gymProgressViewModel.workouts.collectAsState().value
+                    workouts = workouts
                 )
             }
+        }
+    }
+
+    private fun checkMilestones(workoutsCount: Int) {
+        val milestones = listOf(5, 10, 15, 20, 25, 30, 35, 40, 45, 50)
+        if (workoutsCount in milestones) {
+            notificationHelper.showMilestoneNotification(workoutsCount)
         }
     }
 
@@ -61,6 +76,8 @@ fun GymProgressScreen(
     navigateToHome: () -> Unit,
     workouts: List<Workout>
 ) {
+
+
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
@@ -69,13 +86,22 @@ fun GymProgressScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-
             Text(
                 text = "Gym Progress",
                 style = MaterialTheme.typography.headlineMedium.copy(color = Color(0xFFFB8C00)),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp),
+                textAlign = TextAlign.Center
+            )
+
+            // workout number
+            Text(
+                text = "Workouts: ${workouts.size}",
+                style = MaterialTheme.typography.titleMedium.copy(color = Color(0xFF1F3A61)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
                 textAlign = TextAlign.Center
             )
 

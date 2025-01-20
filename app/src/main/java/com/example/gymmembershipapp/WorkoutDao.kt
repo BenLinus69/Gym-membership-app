@@ -11,4 +11,7 @@ interface WorkoutDao {
 
     @Query("SELECT * FROM workout ORDER BY id DESC")
     suspend fun getAllWorkouts(): List<Workout>
+
+    @Query("DELETE FROM workout")
+    suspend fun deleteAll()
 }
