@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="Theme.GymMembershipApp" parent="android:Theme.Material.Light.NoActionBar">
+    </style>
 
-    <style name="Theme.GymMembershipApp" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.GymMembershipApp.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/purple_700</item>
+
+        <item name="windowSplashScreenAnimatedIcon">@drawable/dumbbell</item>
+
+        <item name="windowSplashScreenAnimationDuration">1000</item>
+
+        <item name="postSplashScreenTheme">@style/Theme.GymMembershipApp</item>
+    </style>
 </resources>

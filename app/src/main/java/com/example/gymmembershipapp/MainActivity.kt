@@ -1,6 +1,7 @@
 package com.example.gymmembershipapp
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
@@ -9,6 +10,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Menu
@@ -72,7 +74,8 @@ class MainActivity : FragmentActivity() {
                         DrawerContent(
                             items = listOf(
                                 NavigationItem("About", Icons.Filled.Info),  // Use Filled icons
-                                NavigationItem("Contact", Icons.Filled.Email)
+                                NavigationItem("Contact", Icons.Filled.Email) ,
+                                NavigationItem("Phone", Icons.Filled.Call)
                             ),
                             currentUserEmail = currentUserEmail,
                             onItemClick = { item ->
@@ -91,8 +94,19 @@ class MainActivity : FragmentActivity() {
                                         if (emailIntent.resolveActivity(packageManager) != null) {
                                             startActivity(emailIntent)
                                         } else {
-                                            //error
                                             Toast.makeText(context, "No email app found", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                    "Phone" -> {
+                                        val phoneNumber = "0123456789"
+                                        val phoneIntent = Intent(Intent.ACTION_DIAL).apply {
+                                            data = Uri.parse("tel:$phoneNumber")
+                                        }
+
+                                        if (phoneIntent.resolveActivity(packageManager) != null) {
+                                            startActivity(phoneIntent)
+                                        } else {
+                                            Toast.makeText(context, "No phone app found", Toast.LENGTH_SHORT).show()
                                         }
                                     }
                                 }
