@@ -3,6 +3,7 @@ package com.example.gymmembershipapp
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -73,8 +74,23 @@ class MainActivity : FragmentActivity() {
                             ),
                             onItemClick = { item ->
                                 when (item.title) {
-                                    "About" -> {/* Handle about */ }
-                                    "Contact" -> {/* Handle contact */ }
+                                    "About" -> {
+                                    }
+                                    "Contact" -> {
+                                        val emailIntent = Intent(Intent.ACTION_SEND).apply {
+                                            type = "message/rfc822"
+                                            putExtra(Intent.EXTRA_EMAIL, arrayOf("Gym@support.com"))
+                                            putExtra(Intent.EXTRA_SUBJECT, "Ticket")
+                                        }
+
+                                        //checks for app that can handle intent
+                                        if (emailIntent.resolveActivity(packageManager) != null) {
+                                            startActivity(emailIntent)
+                                        } else {
+                                            //error
+                                            Toast.makeText(context, "No email app found", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
                                 }
                                 scope.launch { drawerState.close() }
                             }
