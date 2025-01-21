@@ -63,6 +63,8 @@ class MainActivity : FragmentActivity() {
                 val scope = rememberCoroutineScope()
                 val context = LocalContext.current
 
+                val currentUserEmail = auth.currentUser?.email ?: "Unknown User"
+
                 ModalNavigationDrawer(
                     drawerState = drawerState,
                     gesturesEnabled = true,
@@ -72,9 +74,11 @@ class MainActivity : FragmentActivity() {
                                 NavigationItem("About", Icons.Filled.Info),  // Use Filled icons
                                 NavigationItem("Contact", Icons.Filled.Email)
                             ),
+                            currentUserEmail = currentUserEmail,
                             onItemClick = { item ->
                                 when (item.title) {
                                     "About" -> {
+                                        navigateToFragment(AboutFragment())
                                     }
                                     "Contact" -> {
                                         val emailIntent = Intent(Intent.ACTION_SEND).apply {
@@ -238,6 +242,7 @@ fun HomeScreen(
 @Composable
 fun DrawerContent(
     items: List<NavigationItem>,
+    currentUserEmail: String,
     onItemClick: (NavigationItem) -> Unit
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
@@ -249,7 +254,7 @@ fun DrawerContent(
             .fillMaxHeight()
             .background(Color.White)
     ) {
-        DrawerHeader()
+        DrawerHeader(currentUserEmail)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -282,7 +287,7 @@ fun DrawerContent(
 
 
 @Composable
-fun DrawerHeader() {
+fun DrawerHeader(currentUserEmail: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -300,6 +305,12 @@ fun DrawerHeader() {
                 text = "Gym Tracker",
                 color = Color.White,
                 style = MaterialTheme.typography.headlineSmall
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Logged in as: $currentUserEmail", // Display the user's email
+                color = Color.White,
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }
