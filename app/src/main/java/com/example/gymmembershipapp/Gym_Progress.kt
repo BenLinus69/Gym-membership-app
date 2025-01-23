@@ -23,6 +23,7 @@ import androidx.fragment.app.viewModels
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import com.google.firebase.auth.FirebaseAuth
 
 
 class GymProgressFragment : Fragment() {
@@ -33,10 +34,21 @@ class GymProgressFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         notificationHelper = NotificationHelper(requireContext())
-        gymProgressViewModel.initializeDatabase(requireContext())  // init db
-        //gymProgressViewModel.debugClearWorkouts()
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId != null) {
+            gymProgressViewModel.initializeDatabase(requireContext())
+
+        } else {
+            navigateToLogin()
+        }
+        //gymProgressViewModel.debugClearWorkouts() //for debugging
         return ComposeView(requireContext()).apply {
             setContent {
+                LaunchedEffect(userId) {
+                    if (userId != null) {
+                        gymProgressViewModel.loadUserWorkouts(userId)
+                    }
+                }
                 val workouts by gymProgressViewModel.workouts.collectAsState()
 
                 checkMilestones(workouts.size)
@@ -60,6 +72,11 @@ class GymProgressFragment : Fragment() {
         if (workoutsCount in milestones) {
             notificationHelper.showMilestoneNotification(workoutsCount)
         }
+    }
+
+    private fun navigateToLogin() {
+        val intent = Intent(requireContext(), LoginActivity::class.java)
+        startActivity(intent)
     }
 
     private fun navigateToFragment(fragment: Fragment) {

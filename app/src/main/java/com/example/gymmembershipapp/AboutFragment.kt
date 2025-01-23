@@ -41,8 +41,6 @@ fun AboutScreen() {
     LaunchedEffect(Unit) {
         visible = true
     }
-
-    // AnimatedVisibility for the entire screen
     androidx.compose.animation.AnimatedVisibility(
         visible = visible,
         enter = fadeIn(animationSpec = tween(durationMillis = 300)) +

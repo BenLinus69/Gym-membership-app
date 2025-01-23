@@ -9,5 +9,6 @@ data class Workout(
     val exercise: String,
     val repetitions: Int,
     val weight: Int,
-    val sets: Int
+    val sets: Int,
+    val userId: String
 )

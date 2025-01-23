@@ -18,6 +18,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 class WorkoutEntryFragment : Fragment() {
@@ -40,15 +41,21 @@ class WorkoutEntryFragment : Fragment() {
     }
 
     private fun saveWorkoutToDatabase(workout: Workout, onComplete: () -> Unit) {
-        val database = AppDatabase.getDatabase(requireContext())
-        lifecycleScope.launch {
-            try {
-                database.workoutDao().insert(workout)
-                Log.d("WorkoutEntryFragment", "Workout saved")
-                onComplete()
-            } catch (e: Exception) {
-                Log.e("WorkoutEntryFragment", "Error: ${e.message}", e)
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId != null) {
+            val workoutWithUserId = workout.copy(userId = userId)
+            val database = AppDatabase.getDatabase(requireContext())
+            lifecycleScope.launch {
+                try {
+                    database.workoutDao().insert(workoutWithUserId)
+                    Log.d("WorkoutEntryFragment", "Workout saved for user $userId")
+                    onComplete()
+                } catch (e: Exception) {
+                    Log.e("WorkoutEntryFragment", "Error: ${e.message}", e)
+                }
             }
+        } else {
+            Log.e("WorkoutEntryFragment", "User not authenticated")
         }
     }
 
@@ -129,13 +136,17 @@ fun WorkoutEntryScreen(onSaveWorkout: (Workout) -> Unit) {
 
             Button(
                 onClick = {
-                    val workout = Workout(
-                        exercise = exercise,
-                        repetitions = repetitions.toIntOrNull() ?: 0,
-                        weight = weight.toIntOrNull() ?: 0,
-                        sets = sets.toIntOrNull() ?: 0
-                    )
-                    onSaveWorkout(workout)
+                    val userId = FirebaseAuth.getInstance().currentUser?.uid
+                    if (!userId.isNullOrEmpty()) {
+                        val workout = Workout(
+                            exercise = exercise,
+                            repetitions = repetitions.toIntOrNull() ?: 0,
+                            weight = weight.toIntOrNull() ?: 0,
+                            sets = sets.toIntOrNull() ?: 0,
+                            userId = userId
+                        )
+                        onSaveWorkout(workout)
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()

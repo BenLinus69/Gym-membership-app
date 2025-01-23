@@ -1,21 +1,19 @@
 package com.example.gymmembershipapp
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 
 class GymProgressViewModel : ViewModel() {
     private val _workouts = MutableStateFlow<List<Workout>>(emptyList())
     val workouts: StateFlow<List<Workout>> = _workouts
 
-    private val _milestoneEvents = MutableSharedFlow<Int>()
-    val milestoneEvents: SharedFlow<Int> = _milestoneEvents.asSharedFlow()
+
+
 
     private lateinit var database: AppDatabase
 
@@ -23,6 +21,8 @@ class GymProgressViewModel : ViewModel() {
         if (!::database.isInitialized) {
             database = AppDatabase.getDatabase(context)
             fetchWorkouts()
+        } else {
+            Log.d("GymProgressViewModel", "Database already initialized")
         }
     }
     fun debugClearWorkouts() {
@@ -34,11 +34,23 @@ class GymProgressViewModel : ViewModel() {
         }
     }
 
-    private fun fetchWorkouts() {
+    fun loadUserWorkouts(userId: String) {
         viewModelScope.launch {
-            _workouts.value = database.workoutDao().getAllWorkouts()
+            database.workoutDao().getWorkoutsForUser(userId).collect { userWorkouts ->
+                _workouts.value = userWorkouts
+            }
+
         }
     }
+
+    private fun fetchWorkouts() {
+        viewModelScope.launch {
+            database.workoutDao().getAllWorkouts().collect { workouts ->
+                _workouts.value = workouts
+            }
+        }
+    }
+
 
 
 }
