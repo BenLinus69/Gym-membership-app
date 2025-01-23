@@ -61,7 +61,6 @@ class MapActivity : ComponentActivity() {
             //request permission
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         } else {
-            //load map
             setContent {
                 GymMembershipAppTheme {
                     MapScreen(fusedLocationClient)
@@ -93,7 +92,6 @@ fun MapScreen(fusedLocationClient: FusedLocationProviderClient) {
                 )
             }
 
-            // Add map
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -109,7 +107,14 @@ fun GoogleMapView(fusedLocationClient: FusedLocationProviderClient) {
     val context = LocalContext.current
     val mapView = MapView(context)
 
-    // Initialize mapView
+    val bucharestBounds = Pair(
+        LatLng(44.3653, 25.9699), // Southwest corner
+        LatLng(44.5448, 26.2341)  // Northeast corner
+    )
+
+    // gen 10 random locations
+    val gymLocations = generateRandomLocations(bucharestBounds, 10)
+
     AndroidView(
         factory = { mapView },
         modifier = Modifier.fillMaxSize(),
@@ -123,23 +128,37 @@ fun GoogleMapView(fusedLocationClient: FusedLocationProviderClient) {
                 ) {
                     googleMap.isMyLocationEnabled = true
 
-                    // get current location
                     fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                         if (location != null) {
                             val currentLatLng = LatLng(location.latitude, location.longitude)
                             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
-                            googleMap.addMarker(
-                                MarkerOptions()
-                                    .position(currentLatLng)
-                                    .title("You are here")
-                            )
                         }
+                    }
+                    //add markers
+                    gymLocations.forEachIndexed { index, latLng ->
+                        googleMap.addMarker(
+                            MarkerOptions()
+                                .position(latLng)
+                                .title("Gym #${index + 1}")
+                        )
                     }
                 }
             }
             map.onResume()
         }
     )
+}
+fun generateRandomLocations(bounds: Pair<LatLng, LatLng>, count: Int): List<LatLng> {
+    val (southwest, northeast) = bounds
+    val randomLocations = mutableListOf<LatLng>()
+
+    repeat(count) {
+        val lat = southwest.latitude + Math.random() * (northeast.latitude - southwest.latitude)
+        val lng = southwest.longitude + Math.random() * (northeast.longitude - southwest.longitude)
+        randomLocations.add(LatLng(lat, lng))
+    }
+
+    return randomLocations
 }
 
 @Preview(showBackground = true)

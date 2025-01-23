@@ -1,7 +1,9 @@
 package com.example.gymmembershipapp
 
 import NotificationHelper
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -29,11 +31,13 @@ import com.google.firebase.auth.FirebaseAuth
 class GymProgressFragment : Fragment() {
     private val gymProgressViewModel: GymProgressViewModel by viewModels()
     private lateinit var notificationHelper: NotificationHelper
+    private lateinit var sharedPreferences: SharedPreferences
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         notificationHelper = NotificationHelper(requireContext())
+        sharedPreferences = requireContext().getSharedPreferences("GymProgressPrefs", Context.MODE_PRIVATE)
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         if (userId != null) {
             gymProgressViewModel.initializeDatabase(requireContext())
@@ -51,7 +55,10 @@ class GymProgressFragment : Fragment() {
                 }
                 val workouts by gymProgressViewModel.workouts.collectAsState()
 
-                checkMilestones(workouts.size)
+                val userWorkouts = workouts.filter { it.userId == userId }
+
+
+                checkMilestones(userWorkouts.size,userId)
 
                 GymProgressScreen(
                     navigateToWorkoutEntry = {
@@ -61,18 +68,27 @@ class GymProgressFragment : Fragment() {
                         val intent = Intent(requireContext(), MainActivity::class.java)
                         startActivity(intent)
                     },
-                    workouts = workouts
+                    workouts = userWorkouts
+
                 )
             }
         }
     }
 
-    private fun checkMilestones(workoutsCount: Int) {
+    private fun checkMilestones(workoutsCount: Int, userId: String?) {
         val milestones = listOf(5, 10, 15, 20, 25, 30, 35, 40, 45, 50)
-        if (workoutsCount in milestones) {
-            notificationHelper.showMilestoneNotification(workoutsCount)
+
+        if (userId != null && workoutsCount in milestones) {
+            val milestoneKey = "milestone_${userId}_$workoutsCount"
+            val milestoneTriggered = sharedPreferences.getBoolean(milestoneKey, false)
+
+            if (!milestoneTriggered) {
+                notificationHelper.showMilestoneNotification(workoutsCount)
+                sharedPreferences.edit().putBoolean(milestoneKey, true).apply()
+            }
         }
     }
+
 
     private fun navigateToLogin() {
         val intent = Intent(requireContext(), LoginActivity::class.java)
@@ -131,6 +147,7 @@ fun GymProgressScreen(
             ) {
                 items(workouts) { workout ->
                     WorkoutCard(workout = workout)
+
                 }
             }
 
@@ -154,13 +171,16 @@ fun GymProgressScreen(
 }
 
 
+
+
 @Composable
 fun WorkoutCard(workout: Workout) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-            .background(Color(0xFFE1F5FE)),
+            .background(Color(0xFFE1F5FE))
+            ,
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         shape = MaterialTheme.shapes.medium
     ) {

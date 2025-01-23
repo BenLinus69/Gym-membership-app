@@ -11,10 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 class GymProgressViewModel : ViewModel() {
     private val _workouts = MutableStateFlow<List<Workout>>(emptyList())
     val workouts: StateFlow<List<Workout>> = _workouts
-
-
-
-
     private lateinit var database: AppDatabase
 
     fun initializeDatabase(context: Context) {
@@ -22,7 +18,7 @@ class GymProgressViewModel : ViewModel() {
             database = AppDatabase.getDatabase(context)
             fetchWorkouts()
         } else {
-            Log.d("GymProgressViewModel", "Database already initialized")
+            Log.d("GymProgressViewModel", "Already initialized")
         }
     }
     fun debugClearWorkouts() {
