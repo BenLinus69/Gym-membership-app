@@ -52,6 +52,8 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.androidx.ui)
+
+    testImplementation(libs.mockito.mockito.core)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.core.splashscreen)
@@ -64,6 +66,7 @@ dependencies {
     implementation(libs.accompanist.permissions)
     implementation(libs.play.services.location)
     testImplementation(libs.junit)
+    testImplementation(libs.objenesis.objenesis)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

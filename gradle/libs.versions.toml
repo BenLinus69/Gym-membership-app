@@ -14,7 +14,9 @@ lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
 composeBom = "2024.11.00"
 materialIconsExtended = "1.7.6"
+mockitoCoreVersion = "4.6.1"
 navigationCompose = "2.8.4"
+objenesisVersion = "3.2"
 playServicesLocation = "21.3.0"
 playServicesMaps = "19.0.0"
 roomCompiler = "2.5.0"
@@ -48,6 +50,8 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-storage = { group = "androidx.test.services", name = "storage", version.ref = "storage" }
+mockito-mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCoreVersion" }
+objenesis-objenesis = { module = "org.objenesis:objenesis", version.ref = "objenesisVersion" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 

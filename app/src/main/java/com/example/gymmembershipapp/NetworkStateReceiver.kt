@@ -15,14 +15,14 @@ class NetworkStateReceiver(private val context: Context) {
     fun registerNetworkCallback() {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-            connectivityManager.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
+        connectivityManager.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
 
                 override fun onLost(network: Network) {
                     super.onLost(network)
                     showNoInternetNotification()
                 }
 
-            })
+        })
 
     }
 
