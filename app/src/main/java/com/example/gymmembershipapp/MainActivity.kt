@@ -40,11 +40,16 @@ data class NavigationItem(
 )
 
 class MainActivity : FragmentActivity() {
+    private lateinit var networkStateReceiver: NetworkStateReceiver
     private val auth = FirebaseAuth.getInstance()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        networkStateReceiver = NetworkStateReceiver(this)
+
+        networkStateReceiver.registerNetworkCallback()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requestPermissions(
